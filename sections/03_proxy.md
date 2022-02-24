@@ -136,7 +136,7 @@ Create the expected folder-structure and add a nice *index.html*. After you relo
 ├── html
 │   └── index.html
 └── logs
-```
+```  
 ![blog](img/blog.png)
 
 

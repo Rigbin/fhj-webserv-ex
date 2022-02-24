@@ -56,7 +56,7 @@ systemctl status apache2
 ***Stopped* Apache**  
 ![Stopped Apache](img/apache_stopped.png)
 
-***Started* Apache**
+***Started* Apache**  
 ![Started Apache](img/apache_started.png)
 
 
@@ -178,7 +178,7 @@ sudo apachectl -t && sudo systemctl reload httpd
 > But apache will not stop on every error. When `systemctl reload apache2` takes several seconds and does not return an error message, this could also be a sign that something probably did not work. Check the **status** and look for *Warning* or *Error*.  
 > Therefore, always test (`apachectl -t`) the configuration before `reload`/`restart`!
 
-When you get no error, you should be able to open your created website with a browser. For example with Firefox.
+When you get no error, you should be able to open your created website with a browser. For example with Firefox.  
 ![open website in firefox](img/get_web_ff.png)
 
 ***
@@ -191,7 +191,7 @@ After you created your first **VirtualHost**, create a second one with another (
 
 ### Custom ErrorDocument
 
-Apache has its own default error responses, for example when you try to get a resource that is not available.
+Apache has its own default error responses, for example when you try to get a resource that is not available.  
 ![404 default](img/apache_404.png)
 
 You can set your own error responses inside your **VirtualHost** configuration (as well inside a [`.htaccess`](#htaccess) file, which we will cover a little later).

@@ -56,7 +56,7 @@ systemctl status nginx
 ***Stopped* Nginx**  
 ![Stopped Nginx](img/nginx_stopped.png)
 
-***Started* Nginx**
+***Started* Nginx**  
 ![Started Nginx](img/nginx_started.png)
 
 ***
@@ -171,7 +171,7 @@ sudo nginx -t && sudo systemctl reload nginx
 > But nginx will not stop on every error. When `systemctl reload nginx` takes several seconds and does not return an error message, this could also be a sign that something probably did not work. Check the **status** and look for *Warning* or *Error*.  
 > Therefore, always test (`nginx -t`) the configuration before `reload`/`restart`!
 
-When you get no error, you should be able to open your created website from your local computer. For example with Firefox.
+When you get no error, you should be able to open your created website from your local computer. For example with Firefox.  
 ![open website in firefox](img/get_web_ff.png)
 
 ***
@@ -184,7 +184,7 @@ After you created your first **server** block, create a second one with another 
 
 ### Custom ErrorDocument
 
-Nginx has its own default error responses, for example when you try to get a resource that is not available.
+Nginx has its own default error responses, for example when you try to get a resource that is not available.  
 ![404 default](img/nginx_404.png)
 
 You can set your own error responses inside your **server** configuration.
