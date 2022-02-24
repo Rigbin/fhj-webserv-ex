@@ -1,0 +1,16 @@
+{
+  "name": "webserv_node_server",
+  "version": "1.0.0",
+  "description": "simple node webserver with express",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
+  },
+  "author": "Harald Schwab, FH JOANNEUM GmbH <harald.schwab2@fh-joanneum.at>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}

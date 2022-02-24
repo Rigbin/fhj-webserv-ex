@@ -1,19 +1,19 @@
 # Apache configuration
 
-As first exercise, we will configure an [apache webserver](https://httpd.apache.org/docs/2.4/). After you started the vm the first time, apache, as well as nginx should be disabled. Before you start, check that neither apache, nor nginx are running.  
+As first exercise, we will configure an [apache webserver](https://httpd.apache.org/docs/2.4/). After you connect to your server the first time, apache, as well as nginx should be disabled. Before you start, check that neither apache, nor nginx are running.  
 
 > All commands and configurations in this exercise are to do as `root`!  
-> Therefore, run all commands with `sudo` prepend, or switch to root with `sudo -i`!
+> Therefore, run the commands with `sudo` prepend!
 
 ```bash
-systemctl status httpd
+systemctl status apache2
 systemctl status nginx
 ```
 
-For this exercise, start just apache.
+For this exercise, start just **apache**.
 
 ```bash
-systemctl start httpd
+sudo systemctl start apache2
 ```
 
 > note that after a restart of your vm apache is stopped again!
@@ -22,38 +22,36 @@ systemctl start httpd
 
 **Start Apache Webserver**
 ```bash
-systemctl start httpd
+sudo systemctl start apache2
 ```
 
 **Stop Apache Webserver**
 ```bash
-systemctl stop httpd
+sudo systemctl stop apache2
 ```
 
 **Check Apache Configuration**
 ```bash
-apachectl -t
-# or
-httpd -t
+sudo apachectl -t
 ```
 
 **Restart Apache Webserver**
 ```bash
-systemctl restart httpd
+sudo systemctl restart apache2
 # better!
-httpd -t && systemctl restart httpd
+sudo apachectl -t && sudo systemctl restart apache2
 ```
 
 **Reload Apache Webserver**
 ```bash
-systemctl reload httpd
+sudo systemctl reload apache2
 # better!
-httpd -t && systemctl reload httpd
+sudo apachectl -t && sudo systemctl reload apache2
 ```
 
 **Get Status of Apache Webserver**
 ```bash
-systemctl status httpd
+systemctl status apache2
 ```
 ***Stopped* Apache**  
 ![Stopped Apache](img/apache_stopped.png)
@@ -62,7 +60,7 @@ systemctl status httpd
 ![Started Apache](img/apache_started.png)
 
 
-> Please note: On other distributions (like debian or ubuntu), apache will run with a different command! Instead of `httpd`, it is `apache2`. Also some configuration steps differ on other distros!
+> Please note: On other distributions (like centos or fedora), apache will run with a different command! Instead of `apache2`, it is `httpd`. Also some configuration steps (especially file-locations) differ on other distros!
 
 ***
 
@@ -76,21 +74,24 @@ Before you start, take a look into the **[Prerequisites](./00_prerequisites.md)*
 At first, we will configure some vhosts. You can choose any domain that you want, I will use `msd-webservice.at`.
 
 ### Add custom configuration
-On CentOS, you can find the central configuration file in `/etc/httpd/conf/httpd.conf`. In the end, you would be able to set all configurations inside of that file, but that wouldn't be a good practice!
+On Debian, you can find the central configuration file in `/etc/apache2/apache2.conf`. In the end, you would be able to set all configurations inside of that file, but that **wouldn't be a good practice**!
 
 Except in special situations you should create separate configuration files. 
 
-Especially for virtual hosts it is best practice to create a separate configuration file for each domain. In CentOS the folder `/etc/httpd/conf.d/` is intended for this purpose.
+Especially for virtual hosts it is best practice to create a separate configuration file for each domain. On Debian the folder `/etc/apache2/sites-available/` is intended for this purpose.
 
-Create a new configuration for your custom domain (in my case *msd-webservice.at*).
+> On Debian, next to the folder `sites-available` is the folde `sites-enabled`. Only site configurations that are located in `/etc/apache2/sites-enabled/` will be considered! But you will not create config files in there, place them inside of `/etc/apache2/sites-available/` and **activate** a site using the command [`a2ensite`](http://manpages.ubuntu.com/manpages/bionic/man8/a2ensite.8.html). To disable a site, use the command `a2dissite`.  
+> On other distros (e.g. CentOS) there will be only one directory for all configurations (CentOS -> `/etc/httpd/conf.d/`). There is no command to (de)-activate sites or other configurations.
+
+Create a new configuration for your custom domain (in my case *msd-webservice.at*). Use your prefered editor! (next to `vim`, also `nano` is available on your server).
 
 ```bash
-vim /etc/httpd/conf.d/msd-webservice.at.conf
+sudo vim /etc/apache2/sites-available/msd-webservice.at.conf
 ```
 
-> all your custom configuration inside `/etc/httpd/conf.d/` **must** end with `.conf`, otherwise apache will ignore them!
+> all your custom configuration inside `/etc/apache2/sites-available/` **must** end with `.conf`, otherwise apache will ignore them!
 
-**/etc/httpd/conf.d/msd-webservice.at.conf**
+**/etc/apache2/sites-available/msd-webservice.at.conf**
 ```apache
 <VirtualHost *:80>
   ServerName  msd-webservice.at
@@ -141,11 +142,17 @@ vim /etc/httpd/conf.d/msd-webservice.at.conf
 > * [`ErrorLog`](https://httpd.apache.org/docs/2.4/en/mod/core.html#errorlog)
 > * [`CustomLog`](https://httpd.apache.org/docs/2.4/logs.html#accesslog)
 
+Now, we need to "enable" the site (by adding a link inside `/etc/apache2/sites-enabled/`). Use the command `a2ensite` for that.
+
+```console
+sudo a2ensite msd-webservice.at
+```
+
 Next, we need to create the expected folder-structure for our new virtual host. We need the `DocumentRoot`, as well as the folder for our log files.
 
 ```bash
-mkdir -p /var/www/msd-webservice.at/html
-mkdir -p /var/www/msd-webservice.at/logs
+sudo mkdir -p /var/www/msd-webservice.at/html
+sudo mkdir -p /var/www/msd-webservice.at/logs
 ```
 
 To ensure that a request without a specific file will returned, we need a `index.html` in our `DirectoryRoot`. 
@@ -164,12 +171,12 @@ To ensure that a request without a specific file will returned, we need a `index
 When everything is correctly set up, we need to reload the apache service once, so that it will re-read the configuration files and applies the changes.
 
 ```bash
-httpd -t && systemctl reload httpd
+sudo apachectl -t && sudo systemctl reload httpd
 ```
 
 > When there is an error (e.g. typo) in your configuration, apache may will stop. In that case, you need to fix the error and start the service again, because it will stop on error!  
-> But apache will not stop on every error. When `systemctl reload httpd` takes several seconds and does not return an error message, this could also be a sign that something probably did not work. Check the **status** and look for *Warning* or *Error*.  
-> Therefore, always test (`httpd -t`) the configuration before `reload`/`restart`!
+> But apache will not stop on every error. When `systemctl reload apache2` takes several seconds and does not return an error message, this could also be a sign that something probably did not work. Check the **status** and look for *Warning* or *Error*.  
+> Therefore, always test (`apachectl -t`) the configuration before `reload`/`restart`!
 
 When you get no error, you should be able to open your created website with a browser. For example with Firefox.
 ![open website in firefox](img/get_web_ff.png)
@@ -214,7 +221,7 @@ Extend your config...
 > **Additional Information**
 > * [`ErrorDocument`](https://httpd.apache.org/docs/2.4/custom-error.html)
 
-Do make the additional configuration work, create the directory `error` inside your DocumentRoot and add the html-files for 404 and 403 (and don't forget to `reload` the httpd-service!).
+Do make the additional configuration work, create the directory `error` inside your DocumentRoot and add the html-files for 404 and 403 (and don't forget to `reload` the apache2-service!).
 
 ```tree
 /var/www/msd-webservice.at/
@@ -238,7 +245,7 @@ With the module mod_rewrite we are able to manage incoming requests based on sel
 
 For example, redirect paths that are no longer available, or change the request for further CGI processing.
 
-As a first example we want to respond to a specific path with the HTTP error 500, so that we can test our custom error text from the previous example.
+As a first example we want to respond to a specific path with the HTTP error 500, so that we can test our custom error text from the previous step.
 
 For that, extend the config file for your **VirtualHost**
 
@@ -262,7 +269,7 @@ For that, extend the config file for your **VirtualHost**
 > <Directory "/var/www/msd-webservice.at/html">
 > </Directory>
 > ```
-> To specify where the should apply, we need a `Directory` directive. This block will enclose a group of directives that will apply only to the named directory and sub-directories, as well as the files inside of them.  
+> To specify where (location) the rule(s) should apply, we need a `Directory` directive. This block will enclose a group of directives that will apply only to the named directory and sub-directories, as well as the files inside of them.  
 > Because the destination of the request will be the `DocumentRoot` of our `VirtualHost`, we need to set up that path here.
 > ```apache
 > RewriteEngine On
@@ -274,7 +281,7 @@ For that, extend the config file for your **VirtualHost**
 > ```
 > `RewriteCond` defines a rule condition. One or more Conds can precede a `RewriteRule`, which will only used if both, the current state of the URI and if the condition(s) are met.   
 > The above `RewriteCond` checks, if the requested file is no regular file (or the file does not exists).  
-> The `RewriteRule` is a regular expression and checks if the request path starts with *test*. if that is the case, we will perform a **R**edirect with the specific HTTP status code 500.  
+> The `RewriteRule` is a regular expression and checks if the request path starts with **test**. if that is the case, we will perform a **R**edirect with the specific HTTP status code 500.  
 
 
 > **Additional Information**
@@ -285,9 +292,9 @@ For that, extend the config file for your **VirtualHost**
 
 ***
 
-#### Rewrite
+#### Rewrite \[OPTIONAL\]
 
-When enough time is left, try with the help of the links above to create some more rewrites. If you find some nice working redirects, [share](https://teams.microsoft.com/l/channel/19%3a43f6ecf23d5c496f842679dde9527344%40thread.tacv2/General?groupId=d49e082b-d452-47ea-9ca3-ecd312610217&tenantId=714ce493-9d00-45e9-9d52-89dfa568262b) it with your colleges.
+When enough time is left, try with the help of the links above to create some more rewrites. If you find some nice working redirects, [share](https://elearning.fh-joanneum.at/mod/etherpadlite/view.php?id=43707) it with your colleges.
 
 ***
 
@@ -350,6 +357,8 @@ Another possibilities are to activate directory indexing, or deny the access to 
 > * [Basic Authentication](https://httpd.apache.org/docs/2.4/howto/auth.html)
 
 ***
+
+#### \[OPTIONAL\]
 
 When enough time is left, try with the help of the links above to experiment with additional configurations inside of the **.htaccess**. Try also different **.htaccess** files inside of subdirectories!
 

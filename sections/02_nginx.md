@@ -3,50 +3,50 @@
 After you set up apache webserver, we will take a look on another popular webserver, [nginx](https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-open-source/). When you just finished the apache exercise, please first stop apache webserver, otherwise you will cannot start nginx (because both will use at least port 80)!
 
 > All commands and configurations in this exercise are to do as `root`!  
-> Therefore, run all commands with `sudo` prepend, or switch to root with `sudo -i`!
+> Therefore, run the commands with `sudo` prepend!
 
 ```bash
 systemctl status httpd
 systemctl status nginx
 ```
 
-For this exercise, start just nginx.
+For this exercise, start just **nginx**.
 
 ```bash
-systemctl start nginx
+sudo systemctl start nginx
 ```
 
-> note that after a restart of your vm apache is stopped again
+> note that after a restart of your vm nginx is stopped again
 
 ## Useful commands
 
 **Start Nginx Webserver**
 ```bash
-systemctl start nginx
+sudo systemctl start nginx
 ```
 
 **Stop Nginx Webserver**
 ```bash
-systemctl stop nginx
+sudo systemctl stop nginx
 ```
 
 **Check Nginx Configuration**
 ```bash
-nginx -t
+sudo nginx -t
 ```
 
 **Restart Nginx Webserver**
 ```bash
-systemctl restart nginx
+sudo systemctl restart nginx
 # better!
-nginx -t && systemctl restart nginx
+sudo nginx -t && sudo systemctl restart nginx
 ```
 
 **Reload Nginx Webserver**
 ```bash
-systemctl reload nginx
+sudo systemctl reload nginx
 # better!
-nginx -t && systemctl reload nginx
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 **Get Status of Nginx Webserver**
@@ -54,10 +54,10 @@ nginx -t && systemctl reload nginx
 systemctl status nginx
 ```
 ***Stopped* Nginx**  
-![Stopped Apache](img/nginx_stopped.png)
+![Stopped Nginx](img/nginx_stopped.png)
 
 ***Started* Nginx**
-![Started Apache](img/nginx_started.png)
+![Started Nginx](img/nginx_started.png)
 
 ***
 
@@ -68,24 +68,26 @@ Before you start, take a look into the **[Prerequisites](./00_prerequisites.md)*
 ***
 
 ## Server Blocks (VHost)
-At first, we will configure some vhosts. You can choose any domain that you want, I will use `msd-webservice.at`
+At first, we will configure some vhosts. You can choose any domain that you want, I will use `msd-webservice.at`.
 
 ### Add custom configuration
-On CentOS, you can find the central configuration file in `/etc/nginx/nginx.conf`. In the end, you would be able to set all configurations inside of that file, but that wouldn't be a good practice!  
+On Debian, you can find the central configuration file in `/etc/nginx/nginx.conf`. In the end, you would be able to set all configurations inside of that file, but that **wouldn't be a good practice!**  
 
 Except in special situations you should also create separate configuration files. 
 
-Especially for virtual hosts it is best practice to create a separate configuration file for each domain. In CentOS the folder `/etc/nginx/conf.d/` is intended for this purpose.
+Especially for virtual hosts it is best practice to create a separate configuration file for each domain. On Debian the folder `/etc/nginx/conf.d/` and `/etc/nginx/sites-available` are intended for this purpose.
 
-Create a new configuration for your custom domain (in my case *msd-webservice.at*).
+> On most (non debian based) distros, you will set all custom configurations inside `/etc/nginx/conf.d/`. Since apache uses the special aproach with `sites-available` and `sites-enabled`, you will also find this folder for nginx. At the end, you have to choose where you put your config files! When using `/etc/nginx/conf.d/` as location, youre config is "active" as long the file ends with `.conf`. When using the `/etc/nginx/sites-available/`/`sites-enabled/` location(s), only linked files in `sites-enabled` will be "active"!
+
+Create a new configuration for your custom domain (in my case *msd-webservice.at*). Use your prefered editor! (next to `vim`, also `nano` is available on your server).
 
 ```bash
-vim /etc/nginx/conf.d/msd-webservice.at.conf
+sudo vim /etc/nginx/sites-available/msd-webservice.at.conf
 ```
 
-> all your custom configuration inside `/etc/nginx/conf.d/` **must** end with `.conf`, otherwise nginx will ignore them!
+> all your custom configuration inside `/etc/nginx/conf.d/` (as well `/etc/nginx/sites-available/`) **must** end with `.conf`, otherwise nginx will ignore them!
 
-**/etc/nginx/conf.d/msd-webservice.at.conf**
+**/etc/nginx/sites-available/msd-webservice.at.conf**
 ```nginx
 server {
   listen 80;
@@ -130,6 +132,12 @@ server {
 > * [`error_log`](https://nginx.org/en/docs/ngx_core_module.html#error_log)
 > * [`access_log`](https://nginx.org/en/docs/http/ngx_http_log_module.html#access_log)
 
+When you have placed your configuration file inside `/etc/nginx/sites-available/` (and not `/etc/nginx/conf.d/`) you need to "activate" the site creating an symlink inside `/etc/nginx/sites-enabled/`. While apache provides it's own script for that (`a2ensite`), you have to do this for nginx manually. (or use a something like [nginx_ensite](https://github.com/perusio/nginx_ensite))
+
+```console
+sudo ln -sf /etc/nginx/sites-available/msd-webservice.at.conf /etc/nginx/sites-enabled/
+```
+
 > if you have already done the apache exercise and you use the same domain and `root` directory, you can [skip](#skip) this part.
 
 Next, we need to create the expected folder-structure for our new virtual host. We need the `root`, as well as the folder for our log files.
@@ -156,7 +164,7 @@ To ensure that a request without a specific file will returned, we need a `index
 When everything is correctly set up, we need to reload the nginx service once, so that it will re-read the configuration files and applies the changes. Before you reload the configuration, test if there are any errors, otherwise you will end with an crashed service or misconfigured server!
 
 ```bash
-nginx -t && systemctl reload nginx
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 > When there is an error (e.g. typo) in your configuration, nginx may will stop on `reload`/`restart`. In that case, you need to fix the error and start the service again, because it will **stop** on error! (**Don't forget the `;` in the config!**)  
@@ -352,9 +360,9 @@ server {
 
 ***
 
-#### Rewrite
+#### Rewrite \[OPTIONAL\]
 
-When enough time is left, take a look on the full [Module documentation](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite) of nginx and try other directives or experiment with additional `rewrite`s. If you find some nice examples, [share](https://teams.microsoft.com/l/channel/19%3a43f6ecf23d5c496f842679dde9527344%40thread.tacv2/General?groupId=d49e082b-d452-47ea-9ca3-ecd312610217&tenantId=714ce493-9d00-45e9-9d52-89dfa568262b)it with your colleges.
+When enough time is left, take a look on the full [Module documentation](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite) of nginx and try other directives or experiment with additional `rewrite`s. If you find some nice examples, [share](https://elearning.fh-joanneum.at/mod/etherpadlite/view.php?id=43707)it with your colleagues.
 
 ***
 
@@ -364,9 +372,9 @@ Nginx offers no alternative to apaches *.htaccess* and therefore no (easy) possi
 
 ***
 
-### Basic Authentication
+### Basic Authentication \[OPTIONAL\]
 
-When enough time is left, take a look on the [basic authentication](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/) tutorial of nginx and try to restrict the access to any desired `location`.
+When enough time is left, take a look on the [basic authentication](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/) tutorial of nginx and try to restrict the access to any desired `location`. We will cover the topic authentication in a later lecture.
 
 ***
 

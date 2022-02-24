@@ -1,0 +1,13 @@
+[Unit]
+Description=Simple Node Webserver
+After=network.target
+
+[Service]
+User=student
+WorkingDirectory=/srv/node/
+Environment=PORT=8080
+ExecStart=/usr/bin/node /srv/node/index.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

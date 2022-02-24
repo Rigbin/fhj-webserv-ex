@@ -12,16 +12,16 @@ Our goal is for nginx to accept all requests on port 80 and either return a stat
 
 For this exercise, we need at least 3 different (sub)-domains. I will choose <www.msd-webservice.at>, <blog.msd-webservice.at> and <api.msd-webservice.at> but you can choose whatever you want.
 
-Add your chosen domains to your `etc/hosts` like described [here](00_prerequisites.md)
+Add your chosen domains to your `etc/hosts` like described [here](00_prerequisites.md).
 
-Also ensure that both nginx and apache are **stopped**.
+Also ensure that both nginx and apache are **stopped** at the beginning.
 
 > All commands and configurations in this exercise are to do as `root`!  
-> Therefore, run all commands with `sudo` prepend, or switch to root with `sudo -i`!
+> Therefore, run the commands with `sudo` prepend!
 
 ```bash
-systemctl stop nginx
-systemctl stop httpd
+sudo systemctl stop nginx
+sudo systemctl stop httpd
 ```
 
 ## Nginx configuration
@@ -100,16 +100,17 @@ To make also the last (sub)-domain work, finish the [nodejs configuration](#node
 
 Before we configure our `VirtualHost`, we need to change the port apache is listen on. Per default, apache listens on port 80. When we start both, nginx and apache at the same time, at least one will crash, because it isn't possible to grab the same port for two processes!
 
-For that, we need to change the apache base configuration `/etc/httpd/conf/httpd.conf`.
+For that, we need to change the apache ports configuration `/etc/apache2/ports.conf`.
 
-**/etc/httpd/conf/httpd.conf**
+**/etc/apache2/ports.conf**
 ```apache
 # ...
 Listen 7080
 
 # ..
 ```
-Somewhere in this configuration, you will find a line `Listen 80`. Change it to `Listen 7080`.
+Somewhere in this configuration, you will find a line `Listen 80`. Change it to `Listen 7080`.  
+To avoid troubles on https port (`443`), also change the line(s) `Listen 443` to `Listen 7443`.
 
 Now we can start apache next to nginx without troubles.
 
@@ -148,6 +149,8 @@ node /srv/node/index.js
 ```
 
 If you want to run the nodejs application in background, simple add a `&` at the end. If you want to stop it, call `kill <pid>` (with the returned *pid* after the start) or simple `killall node` (*! attention, if several nodejs applications are running on the system, they will be **all** terminated!*)
+
+We also provide a systemd-service for this node application, that you can run with the command `sudo systemctl start nodews.service`. Checkout [Custom Systemd-Service](../resources/node/systemd/) when you interested how that works.
 
 
 ![api](img/api.png)
