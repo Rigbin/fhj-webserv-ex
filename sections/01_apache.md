@@ -189,7 +189,9 @@ After you created your first **VirtualHost**, create a second one with another (
 
 ***
 
-### Custom ErrorDocument
+> **CHECKPOINT AP-001: You should have 2 separate virtual-hostss and be able to access the different webpages with your (local) browser.**
+
+## Custom ErrorDocument
 
 Apache has its own default error responses, for example when you try to get a resource that is not available.  
 ![404 default](img/apache_404.png)
@@ -290,6 +292,9 @@ For that, extend the config file for your **VirtualHost**
 > * [`RewriteRule`](https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html#rewriterule)
 >   * [Flags](https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html#rewriteflags)
 
+
+> **CHECKPOINT AP-002: You should have 3 custom error-documents.**
+
 ***
 
 #### Rewrite \[OPTIONAL\]
@@ -355,6 +360,9 @@ Another possibilities are to activate directory indexing, or deny the access to 
 > * [`Options`](https://httpd.apache.org/docs/2.4/en/mod/core.html#options)
 > * [`Allow`](https://httpd.apache.org/docs/2.4/en/mod/mod_access_compat.html#allow) and [`Deny`](https://httpd.apache.org/docs/2.4/en/mod/mod_access_compat.html#deny)
 > * [Basic Authentication](https://httpd.apache.org/docs/2.4/howto/auth.html)
+
+
+> **CHECKPOINT AP-003: You should be able to use a local `.htaccess` to set custom configurations.**
 
 ***
 

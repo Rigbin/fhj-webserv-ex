@@ -157,6 +157,10 @@ We also provide a systemd-service for this node application, that you can run wi
 
 ***
 
+> **CHECKPOINT PR-001: You should be able to connect to the three different "serives" with different URLs.**
+
+***
+
 * [README](../README.md)
 * [Prerequisites](00_prerequisites.md)
 * [Apache](01_apache.md)

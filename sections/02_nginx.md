@@ -182,7 +182,10 @@ After you created your first **server** block, create a second one with another 
 
 ***
 
-### Custom ErrorDocument
+> **CHECKPOINT NX-001: You should have 2 separate server-blocks and be able to access the different webpages with your (local) browser.**
+
+
+## Custom ErrorDocument
 
 Nginx has its own default error responses, for example when you try to get a resource that is not available.  
 ![404 default](img/nginx_404.png)
@@ -262,7 +265,10 @@ server {
 > * [`location`](https://nginx.org/en/docs/http/ngx_http_core_module.html#location)
 > * [`fastcgi_pass`](https://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_pass)
 
-### return and rewrite
+
+> **CHECKPOINT NX-002: You should have 3 custom error-documents.**
+
+## return and rewrite
 
 With the directives `return` and `rewrite` we are able to manage incoming requests based on locations or self defined regular expressions.
 
@@ -357,6 +363,9 @@ server {
 
 > **Additional Information*
 > * [`rewrite`](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite)
+
+
+> **CHECKPOINT NX-003: You should have a redirection for "moved" resources.**
 
 ***
 
