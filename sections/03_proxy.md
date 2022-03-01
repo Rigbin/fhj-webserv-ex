@@ -129,7 +129,7 @@ Next, we need a configuration to respond something on request. For that, we will
 
 The main difference to the origin exercise, we need to set up the `VirtualHost` to listen on port *7080* as well.
 
-Create the expected folder-structure and add a nice *index.html*. After you reload apache, you should get the expected website.
+Create the expected folder-structure and add a nice *index.html*. Don't forget to "enable" the site ! After you reload apache, you should get the expected website.
 
 ```tree
 /var/www/blog.msd-webservice.at/
