@@ -21,7 +21,7 @@ Also ensure that both nginx and apache are **stopped** at the beginning.
 
 ```bash
 sudo systemctl stop nginx
-sudo systemctl stop httpd
+sudo systemctl stop apache2
 ```
 
 ## Nginx configuration
