@@ -6,7 +6,7 @@ After you set up apache webserver, we will take a look on another popular webser
 > Therefore, run the commands with `sudo` prepend!
 
 ```bash
-systemctl status httpd
+systemctl status apache2
 systemctl status nginx
 ```
 
