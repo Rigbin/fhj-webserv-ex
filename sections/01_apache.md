@@ -171,7 +171,7 @@ To ensure that a request without a specific file will returned, we need a `index
 When everything is correctly set up, we need to reload the apache service once, so that it will re-read the configuration files and applies the changes.
 
 ```bash
-sudo apachectl -t && sudo systemctl reload httpd
+sudo apachectl -t && sudo systemctl reload apache2
 ```
 
 > When there is an error (e.g. typo) in your configuration, apache may will stop. In that case, you need to fix the error and start the service again, because it will stop on error!  
